@@ -13,10 +13,11 @@ import {
 } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { FilterSelect } from '@/components/filter-select'
 import { ColourGlass, ColourVarietalLine, FlavourBadge, GrapeScore } from '@/components/wine-bits'
 import { useUserId } from '@/lib/auth'
 import { formatRelativeDate } from '@/lib/dates'
-import { COLOURS, countryFlag, formatCountry, formatWineTitle } from '@/lib/labels'
+import { COLOURS, COLOUR_LABELS, countryFlag, formatCountry, formatWineTitle } from '@/lib/labels'
 import { signedUrlsQuery } from '@/lib/photos'
 import { countriesQuery, profilesQuery, regionsQuery, varietalsQuery } from '@/lib/queries/lookups'
 import { tastingsQuery, type TastingWithWine, type WineWithRefs } from '@/lib/queries/tastings'
@@ -76,9 +77,39 @@ export function BrowsePage() {
   const hasActiveFilters =
     filtersToParams({ ...filters, view: DEFAULT_FILTERS.view }).size > 0
 
-  const regionOptions = filters.country
-    ? regions.filter((r) => r.country_code === filters.country)
-    : regions
+  // Filters only offer values that actually appear in the logged wines —
+  // there's no point scrolling past 40 countries to reach the six in use.
+  const used = useMemo(() => {
+    const wines = (tastings ?? []).map((t) => t.wine)
+    return {
+      colours: new Set(wines.map((w) => w.colour).filter(Boolean)),
+      countries: new Set(wines.map((w) => w.country_code).filter(Boolean)),
+      regions: new Set(wines.map((w) => w.region_id).filter(Boolean)),
+      varietals: new Set(wines.flatMap((w) => w.wine_varietals.map((wv) => wv.varietal.id))),
+    }
+  }, [tastings])
+
+  const colourOptions = COLOURS.filter((c) => used.colours.has(c)).map((colour) => ({
+    value: colour,
+    label: COLOUR_LABELS[colour],
+    node: <ColourGlass colour={colour} withLabel />,
+  }))
+
+  const countryOptions = countries
+    .filter((c) => used.countries.has(c.code))
+    .map((country) => ({
+      value: country.code,
+      label: `${country.name} ${countryFlag(country.code)}`,
+    }))
+
+  const regionOptions = regions
+    .filter((r) => used.regions.has(r.id))
+    .filter((r) => !filters.country || r.country_code === filters.country)
+    .map((region) => ({ value: region.id, label: region.name }))
+
+  const varietalOptions = varietals
+    .filter((v) => used.varietals.has(v.id))
+    .map((varietal) => ({ value: varietal.id, label: varietal.name }))
 
   return (
     <div className="space-y-4">
@@ -145,74 +176,34 @@ export function BrowsePage() {
               ))}
           </SelectContent>
         </Select>
-        <Select
-          value={filters.colour ?? ANY}
-          onValueChange={(colour) =>
-            update({ colour: colour === ANY ? null : (colour as BrowseFilters['colour']) })
-          }
-        >
-          <SelectTrigger size="sm" className="shrink-0">
-            <SelectValue placeholder="Colour" />
-          </SelectTrigger>
-          <SelectContent className="w-[var(--radix-select-trigger-width)] min-w-0">
-            <SelectItem value={ANY}>Any colour</SelectItem>
-            {COLOURS.map((colour) => (
-              <SelectItem key={colour} value={colour}>
-                <ColourGlass colour={colour} withLabel />
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={filters.country ?? ANY}
-          onValueChange={(country) =>
-            update({ country: country === ANY ? null : country, region: null })
-          }
-        >
-          <SelectTrigger size="sm" className="shrink-0">
-            <SelectValue placeholder="Country" />
-          </SelectTrigger>
-          <SelectContent className="w-[var(--radix-select-trigger-width)] min-w-0">
-            <SelectItem value={ANY}>Any country</SelectItem>
-            {countries.map((country) => (
-              <SelectItem key={country.code} value={country.code}>
-                {countryFlag(country.code)} {country.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={filters.region ?? ANY}
-          onValueChange={(region) => update({ region: region === ANY ? null : region })}
-        >
-          <SelectTrigger size="sm" className="shrink-0">
-            <SelectValue placeholder="Region" />
-          </SelectTrigger>
-          <SelectContent className="w-[var(--radix-select-trigger-width)] min-w-0">
-            <SelectItem value={ANY}>Any region</SelectItem>
-            {regionOptions.map((region) => (
-              <SelectItem key={region.id} value={region.id}>
-                {region.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={filters.varietal ?? ANY}
-          onValueChange={(varietal) => update({ varietal: varietal === ANY ? null : varietal })}
-        >
-          <SelectTrigger size="sm" className="shrink-0">
-            <SelectValue placeholder="Varietal" />
-          </SelectTrigger>
-          <SelectContent className="w-[var(--radix-select-trigger-width)] min-w-0">
-            <SelectItem value={ANY}>Any varietal</SelectItem>
-            {varietals.map((varietal) => (
-              <SelectItem key={varietal.id} value={varietal.id}>
-                {varietal.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <FilterSelect
+          placeholder="Colour"
+          anyLabel="Any colour"
+          value={filters.colour}
+          options={colourOptions}
+          onChange={(colour) => update({ colour: colour as BrowseFilters['colour'] })}
+        />
+        <FilterSelect
+          placeholder="Country"
+          anyLabel="Any country"
+          value={filters.country}
+          options={countryOptions}
+          onChange={(country) => update({ country, region: null })}
+        />
+        <FilterSelect
+          placeholder="Region"
+          anyLabel="Any region"
+          value={filters.region}
+          options={regionOptions}
+          onChange={(region) => update({ region })}
+        />
+        <FilterSelect
+          placeholder="Varietal"
+          anyLabel="Any varietal"
+          value={filters.varietal}
+          options={varietalOptions}
+          onChange={(varietal) => update({ varietal })}
+        />
         <Select
           value={filters.minRating != null ? String(filters.minRating) : ANY}
           onValueChange={(minRating) =>
