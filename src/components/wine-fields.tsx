@@ -15,7 +15,8 @@ import {
   varietalsQuery,
 } from '@/lib/queries/lookups'
 import { winesQuery } from '@/lib/queries/wines'
-import { COLOURS, COLOUR_BUTTON_CLASSES, COLOUR_LABELS, countryFlag } from '@/lib/labels'
+import { ColourDot } from '@/components/wine-bits'
+import { COLOURS, COLOUR_LABELS, countryFlag } from '@/lib/labels'
 import { cn } from '@/lib/utils'
 import type { WineFormValues } from '@/lib/schemas/wine'
 
@@ -170,14 +171,14 @@ export function WineFields({ form }: { form: UseFormReturn<WineFormValues> }) {
                     type="button"
                     aria-pressed={field.value === c}
                     className={cn(
-                      'rounded-md px-3 py-1.5 text-sm font-medium transition-opacity',
-                      COLOUR_BUTTON_CLASSES[c],
+                      'flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium transition-colors',
                       field.value === c
-                        ? 'opacity-100 ring-2 ring-ring'
-                        : 'opacity-70 hover:opacity-100',
+                        ? 'border-ring bg-accent'
+                        : 'border-input text-muted-foreground hover:bg-accent/50 hover:text-foreground',
                     )}
                     onClick={() => field.onChange(field.value === c ? null : c)}
                   >
+                    <ColourDot colour={c} />
                     {COLOUR_LABELS[c]}
                   </button>
                 ))}

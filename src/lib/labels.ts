@@ -10,14 +10,15 @@ export const COLOUR_LABELS: Record<Enums<'wine_colour'>, string> = {
   dessert: 'Dessert',
 }
 
+// The canonical wine-colour palette, used everywhere a colour dot renders.
 export const COLOUR_DOT_CLASSES: Record<Enums<'wine_colour'>, string> = {
-  red: 'bg-red-800',
-  white: 'bg-yellow-100 border border-yellow-300',
-  rose: 'bg-pink-300',
-  orange: 'bg-orange-400',
-  sparkling: 'bg-amber-200 border border-amber-400',
-  fortified: 'bg-amber-800',
-  dessert: 'bg-yellow-500',
+  red: 'bg-[#81171B]',
+  white: 'bg-[#DED4AB]',
+  rose: 'bg-[#FD96A9]',
+  orange: 'bg-[#D98E32]',
+  sparkling: 'bg-[#E2D39D]',
+  fortified: 'bg-[#3B0E31]',
+  dessert: 'bg-[#DCEDFF]',
 }
 
 export const VESSEL_LABELS: Record<Enums<'vessel_type'>, string> = {
@@ -41,17 +42,6 @@ export const VESSELS = Object.keys(VESSEL_LABELS) as Enums<'vessel_type'>[]
 export const TEMPS = Object.keys(TEMP_LABELS) as Enums<'serving_temp'>[]
 
 export const CURRENCIES = ['CAD', 'USD', 'EUR', 'GBP', 'AUD', 'NZD', 'CHF', 'JPY', 'ZAR', 'ARS', 'CLP'] as const
-
-// Always-coloured picker buttons; the selected one gets a ring.
-export const COLOUR_BUTTON_CLASSES: Record<Enums<'wine_colour'>, string> = {
-  red: 'bg-red-900 text-red-50',
-  white: 'bg-stone-100 text-stone-900',
-  rose: 'bg-pink-400 text-pink-950',
-  orange: 'bg-orange-500 text-orange-950',
-  sparkling: 'bg-amber-100 text-amber-950',
-  dessert: 'bg-blue-500 text-white',
-  fortified: 'bg-[oklch(0.35_0.08_35)] text-orange-100',
-}
 
 export function countryFlag(code: string): string {
   return String.fromCodePoint(
