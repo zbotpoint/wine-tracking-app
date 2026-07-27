@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Check, ChevronDown } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
@@ -56,18 +55,21 @@ export function FilterSelect({
       }}
     >
       <PopoverTrigger asChild>
-        <Button
+        {/* Mirrors SelectTrigger size="sm" so filters look identical whether
+            they're a native select or this searchable popover. */}
+        <button
           type="button"
-          variant="outline"
-          size="sm"
           role="combobox"
           aria-expanded={open}
           disabled={disabled}
-          className={cn('shrink-0 justify-between font-normal', !selected && 'text-muted-foreground')}
+          className={cn(
+            'flex h-8 w-fit shrink-0 items-center justify-between gap-1.5 rounded-md border border-input bg-input/30 py-2 pr-2 pl-2.5 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none hover:bg-input/50 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50',
+            !selected && 'text-muted-foreground',
+          )}
         >
           <span className="truncate">{selected?.label ?? placeholder}</span>
-          <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
-        </Button>
+          <ChevronDown className="pointer-events-none size-4 shrink-0 text-muted-foreground" />
+        </button>
       </PopoverTrigger>
       <PopoverContent className="w-56 p-0" align="start">
         {options.length > SEARCH_THRESHOLD && (

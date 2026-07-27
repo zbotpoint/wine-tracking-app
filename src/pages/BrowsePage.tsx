@@ -17,7 +17,7 @@ import { FilterSelect } from '@/components/filter-select'
 import { ColourGlass, ColourVarietalLine, FlavourBadge, GrapeScore } from '@/components/wine-bits'
 import { useUserId } from '@/lib/auth'
 import { formatRelativeDate } from '@/lib/dates'
-import { COLOURS, COLOUR_LABELS, countryFlag, formatCountry, formatWineTitle } from '@/lib/labels'
+import { COLOURS, countryFlag, formatCountry, formatWineTitle } from '@/lib/labels'
 import { signedUrlsQuery } from '@/lib/photos'
 import { countriesQuery, profilesQuery, regionsQuery, varietalsQuery } from '@/lib/queries/lookups'
 import { tastingsQuery, type TastingWithWine, type WineWithRefs } from '@/lib/queries/tastings'
@@ -88,12 +88,6 @@ export function BrowsePage() {
       varietals: new Set(wines.flatMap((w) => w.wine_varietals.map((wv) => wv.varietal.id))),
     }
   }, [tastings])
-
-  const colourOptions = COLOURS.filter((c) => used.colours.has(c)).map((colour) => ({
-    value: colour,
-    label: COLOUR_LABELS[colour],
-    node: <ColourGlass colour={colour} withLabel />,
-  }))
 
   const countryOptions = countries
     .filter((c) => used.countries.has(c.code))
@@ -176,13 +170,24 @@ export function BrowsePage() {
               ))}
           </SelectContent>
         </Select>
-        <FilterSelect
-          placeholder="Colour"
-          anyLabel="Any colour"
-          value={filters.colour}
-          options={colourOptions}
-          onChange={(colour) => update({ colour: colour as BrowseFilters['colour'] })}
-        />
+        <Select
+          value={filters.colour ?? ANY}
+          onValueChange={(colour) =>
+            update({ colour: colour === ANY ? null : (colour as BrowseFilters['colour']) })
+          }
+        >
+          <SelectTrigger size="sm" className="shrink-0">
+            <SelectValue placeholder="Colour" />
+          </SelectTrigger>
+          <SelectContent className="w-[var(--radix-select-trigger-width)] min-w-0">
+            <SelectItem value={ANY}>Any colour</SelectItem>
+            {COLOURS.map((colour) => (
+              <SelectItem key={colour} value={colour}>
+                <ColourGlass colour={colour} withLabel />
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <FilterSelect
           placeholder="Country"
           anyLabel="Any country"
