@@ -12,7 +12,7 @@ import { OccasionFields, RatingNotesFields } from '@/components/tasting-fields'
 import { ColourVarietalLine } from '@/components/wine-bits'
 import { WineFields } from '@/components/wine-fields'
 import { useUserId } from '@/lib/auth'
-import { formatWineTitle } from '@/lib/labels'
+import { formatCountry, formatWineTitle } from '@/lib/labels'
 import { logTasting } from '@/lib/mutations'
 import { winesQuery, type WineWithTastings } from '@/lib/queries/wines'
 import { tastingFieldsSchema, type TastingFieldsValues } from '@/lib/schemas/tasting'
@@ -151,7 +151,7 @@ export function LogTastingPage() {
                   selectedWine.producer,
                   selectedWine.subregion?.name,
                   selectedWine.region?.name,
-                  selectedWine.country?.name,
+                  formatCountry(selectedWine.country),
                 ]
                   .filter(Boolean)
                   .join(' · ')}

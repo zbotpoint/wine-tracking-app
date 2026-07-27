@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ColourVarietalLine, RatingBadge } from '@/components/wine-bits'
 import { useUserId } from '@/lib/auth'
-import { formatPrice, formatWineTitle, TEMP_LABELS, VESSEL_LABELS } from '@/lib/labels'
+import { formatCountry, formatPrice, formatWineTitle, TEMP_LABELS, VESSEL_LABELS } from '@/lib/labels'
 import { deleteTasting } from '@/lib/mutations'
 import { signedUrlsQuery } from '@/lib/photos'
 import { wineQuery } from '@/lib/queries/wines'
@@ -73,7 +73,7 @@ export function WineDetailPage() {
           )}
         </div>
         <p className="text-muted-foreground">
-          {[wine.producer, wine.subregion?.name, wine.region?.name, wine.country?.name]
+          {[wine.producer, wine.subregion?.name, wine.region?.name, formatCountry(wine.country)]
             .filter(Boolean)
             .join(' · ')}
         </p>

@@ -58,9 +58,21 @@ export function Layout() {
           </nav>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-3xl px-4 py-6">
+      <main className="mx-auto w-full max-w-3xl px-4 py-6 pb-24">
         <Outlet />
       </main>
+      {location.pathname !== '/log' && (
+        <Button
+          asChild
+          size="icon"
+          className="fixed right-4 bottom-4 z-50 size-14 rounded-full shadow-lg"
+        >
+          <Link to="/log" aria-label="Log a wine">
+            <Plus className="size-5" />
+            <Wine className="size-6" />
+          </Link>
+        </Button>
+      )}
     </div>
   )
 }

@@ -14,9 +14,9 @@ import {
 } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { ColourGlass, ColourVarietalLine, RatingBadge } from '@/components/wine-bits'
+import { ColourGlass, ColourVarietalLine, GrapeScore, RatingBadge } from '@/components/wine-bits'
 import { useUserId } from '@/lib/auth'
-import { COLOURS, countryFlag, formatWineTitle } from '@/lib/labels'
+import { COLOURS, countryFlag, formatCountry, formatWineTitle } from '@/lib/labels'
 import { signedUrlsQuery } from '@/lib/photos'
 import { countriesQuery, profilesQuery, regionsQuery, varietalsQuery } from '@/lib/queries/lookups'
 import { tastingsQuery, type TastingWithWine, type WineWithRefs } from '@/lib/queries/tastings'
@@ -89,13 +89,33 @@ export function BrowsePage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+      <div className="flex items-center justify-between gap-2">
         <Input
           value={filters.q}
           onChange={(e) => update({ q: e.target.value })}
           placeholder="Search wines…"
-          className="w-36 shrink-0 sm:w-48"
+          className="w-full max-w-xs"
         />
+        <ToggleGroup
+          type="single"
+          variant="outline"
+          size="sm"
+          className="shrink-0"
+          value={filters.view}
+          onValueChange={(view) => {
+            if (view) update({ view: view as BrowseFilters['view'] })
+          }}
+        >
+          <ToggleGroupItem value="log" className="px-3">
+            Log
+          </ToggleGroupItem>
+          <ToggleGroupItem value="wines" className="px-3">
+            Wines
+          </ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+
+      <div className="flex items-center gap-2 overflow-x-auto pb-1">
         <Select value={filters.owner} onValueChange={(owner) => update({ owner })}>
           <SelectTrigger size="sm" className="shrink-0">
             <SelectValue />
@@ -211,23 +231,6 @@ export function BrowsePage() {
             Clear
           </Button>
         )}
-        <ToggleGroup
-          type="single"
-          variant="outline"
-          size="sm"
-          className="ml-auto shrink-0"
-          value={filters.view}
-          onValueChange={(view) => {
-            if (view) update({ view: view as BrowseFilters['view'] })
-          }}
-        >
-          <ToggleGroupItem value="log" className="px-3">
-            Log
-          </ToggleGroupItem>
-          <ToggleGroupItem value="wines" className="px-3">
-            Wines
-          </ToggleGroupItem>
-        </ToggleGroup>
       </div>
 
       {isPending ? (
@@ -305,7 +308,7 @@ function TastingFeed({
                   {t.rating != null && <RatingBadge rating={t.rating} />}
                 </div>
                 <p className="truncate text-sm text-muted-foreground">
-                  {[t.wine.producer, t.wine.subregion?.name, t.wine.region?.name, t.wine.country?.name]
+                  {[t.wine.producer, t.wine.subregion?.name, t.wine.region?.name, formatCountry(t.wine.country)]
                     .filter(Boolean)
                     .join(' · ')}
                 </p>
@@ -383,18 +386,22 @@ function WineGrid({
               <div className="min-w-0 flex-1 space-y-1">
                 <p className="font-medium">{formatWineTitle(wine)}</p>
                 <p className="truncate text-sm text-muted-foreground">
-                  {[wine.producer, wine.subregion?.name, wine.region?.name, wine.country?.name]
+                  {[wine.producer, wine.subregion?.name, wine.region?.name, formatCountry(wine.country)]
                     .filter(Boolean)
                     .join(' · ')}
                 </p>
-                <p className="text-xs text-muted-foreground">
-                  {avg == null
-                    ? 'Unrated'
-                    : wineTastings.length === 1
-                      ? `Rated ${avg.toFixed(0)}/10`
-                      : `${wineTastings.length} tastings · avg ${avg.toFixed(1)}/10`}
-                  {' · last '}
-                  {latest.consumed_on}
+                <p className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
+                  {avg == null ? (
+                    'Unrated'
+                  ) : wineTastings.length === 1 ? (
+                    <GrapeScore value={avg.toFixed(0)} />
+                  ) : (
+                    <>
+                      {wineTastings.length} tastings · avg{' '}
+                      <GrapeScore value={avg.toFixed(1)} />
+                    </>
+                  )}
+                  <span>· last {latest.consumed_on}</span>
                 </p>
               </div>
             </Link>

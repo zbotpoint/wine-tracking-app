@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, type ReactNode } from 'react'
 import { useSearchParams } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
+import { GrapeScore } from '@/components/wine-bits'
 import { useUserId } from '@/lib/auth'
 import { countryFlag } from '@/lib/labels'
 import { countriesQuery, profilesQuery } from '@/lib/queries/lookups'
@@ -85,7 +86,13 @@ export function StatsPage() {
             <StatTile label="Distinct wines" value={String(summary.distinctWines)} />
             <StatTile
               label="Average rating"
-              value={summary.avgRating != null ? summary.avgRating.toFixed(1) : '–'}
+              value={
+                summary.avgRating != null ? (
+                  <GrapeScore value={summary.avgRating.toFixed(1)} className="gap-1 [&_svg]:size-5" />
+                ) : (
+                  '–'
+                )
+              }
             />
             <StatTile label="Favourite colour" value={summary.favouriteColour ?? '–'} />
           </div>
@@ -118,7 +125,7 @@ export function StatsPage() {
   )
 }
 
-function StatTile({ label, value }: { label: string; value: string }) {
+function StatTile({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="rounded-lg border p-3">
       <p className="text-xs text-muted-foreground">{label}</p>
@@ -168,8 +175,8 @@ function TopCard({ title, group }: { title: string; group: TopGroup | null }) {
         {group ? (
           <>
             <p className="text-lg font-semibold">{group.label}</p>
-            <p className="text-sm text-muted-foreground">
-              avg {group.avg.toFixed(1)}/10 over {group.count}{' '}
+            <p className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
+              avg <GrapeScore value={group.avg.toFixed(1)} /> over {group.count}{' '}
               {group.count === 1 ? 'tasting' : 'tastings'}
             </p>
           </>

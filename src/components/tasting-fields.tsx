@@ -17,6 +17,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { AddFieldButton, FieldSection } from '@/components/form-section'
 import { PhotoInput } from '@/components/photo-input'
 import { SuggestInput } from '@/components/suggest-input'
+import { GrapeScore } from '@/components/wine-bits'
 import { FieldError } from '@/components/field-error'
 import { flavoursQuery } from '@/lib/queries/lookups'
 import { CURRENCIES, TEMPS, TEMP_LABELS, VESSELS, VESSEL_LABELS } from '@/lib/labels'
@@ -232,7 +233,7 @@ export function RatingNotesFields({ form }: { form: UseFormReturn<TastingFieldsV
                   >
                     <Grape
                       className={cn(
-                        'size-6 text-white transition-opacity',
+                        'size-6 text-foreground transition-opacity',
                         field.value != null && rating <= field.value
                           ? 'opacity-100'
                           : 'opacity-40',
@@ -242,7 +243,13 @@ export function RatingNotesFields({ form }: { form: UseFormReturn<TastingFieldsV
                 ))}
               </div>
               <p className="text-xs tabular-nums text-muted-foreground">
-                {field.value != null ? `(${field.value}/10)` : '(unrated)'}
+                {field.value != null ? (
+                  <span className="inline-flex items-center">
+                    (<GrapeScore value={field.value} className="[&_svg]:size-3" />)
+                  </span>
+                ) : (
+                  '(unrated)'
+                )}
               </p>
             </div>
           )}

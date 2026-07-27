@@ -2,17 +2,17 @@ import type { ComponentType, ReactNode } from 'react'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
-// Each form section gets its own accent so the three are visually distinct:
+// Each form section gets its own accent from the approved palette:
 // wine = bordeaux, occasion = gold, review = violet.
 const ACCENTS = {
-  wine: { border: 'border-l-primary', icon: 'text-primary' },
+  wine: { border: 'border-l-primary', icon: 'text-chart-1' },
   occasion: {
-    border: 'border-l-[oklch(0.75_0.12_85)]',
-    icon: 'text-[oklch(0.75_0.12_85)]',
+    border: 'border-l-[#F8DE7E]',
+    icon: 'text-[#F8DE7E]',
   },
   review: {
-    border: 'border-l-[oklch(0.65_0.1_300)]',
-    icon: 'text-[oklch(0.65_0.1_300)]',
+    border: 'border-l-[#8E4585]',
+    icon: 'text-[#8E4585]',
   },
 } as const
 
