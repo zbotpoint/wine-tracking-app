@@ -14,10 +14,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { ColourVarietalLine, RatingBadge } from '@/components/wine-bits'
+import { ColourVarietalLine, FlavourBadge, RatingBadge } from '@/components/wine-bits'
 import { useUserId } from '@/lib/auth'
 import { formatCountry, formatPrice, formatWineTitle, TEMP_LABELS, VESSEL_LABELS } from '@/lib/labels'
 import { deleteTasting } from '@/lib/mutations'
@@ -120,11 +119,9 @@ export function WineDetailPage() {
                 </p>
               )}
               {t.tasting_flavours.length > 0 && (
-                <div className="flex flex-wrap gap-1">
+                <div className="flex flex-wrap gap-1.5">
                   {t.tasting_flavours.map((tf) => (
-                    <Badge key={tf.flavour.id} variant="outline" className="font-normal">
-                      {tf.flavour.name}
-                    </Badge>
+                    <FlavourBadge key={tf.flavour.id} name={tf.flavour.name} />
                   ))}
                 </div>
               )}

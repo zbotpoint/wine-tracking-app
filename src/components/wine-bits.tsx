@@ -27,7 +27,7 @@ export function ColourGlass({
   )
 }
 
-// "7.7🍇" — a violet score with a grape in place of "/10".
+// "7.7🍇" — a white score with a violet grape in place of "/10".
 export function GrapeScore({
   value,
   className,
@@ -38,12 +38,21 @@ export function GrapeScore({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-0.5 font-semibold text-[#8E4585] tabular-nums',
+        'inline-flex items-center gap-0.5 font-semibold text-foreground tabular-nums',
         className,
       )}
     >
       {value}
-      <Grape className="size-[1.1em] shrink-0" aria-hidden />
+      <Grape className="size-[1.1em] shrink-0 text-[#8E4585]" aria-hidden />
+    </span>
+  )
+}
+
+// Tasting descriptors, in the violet of The Review section they belong to.
+export function FlavourBadge({ name }: { name: string }) {
+  return (
+    <span className="rounded-md border border-[#8E4585]/50 bg-[#8E4585]/20 px-2.5 py-1 text-xs text-foreground">
+      {name}
     </span>
   )
 }

@@ -1,8 +1,7 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
-import { FilterX, Grape, Wine } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
+import { FilterX, Grape, NotebookPen, Search, Wine } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -14,7 +13,7 @@ import {
 } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { ColourGlass, ColourVarietalLine, GrapeScore } from '@/components/wine-bits'
+import { ColourGlass, ColourVarietalLine, FlavourBadge, GrapeScore } from '@/components/wine-bits'
 import { useUserId } from '@/lib/auth'
 import { formatRelativeDate } from '@/lib/dates'
 import { COLOURS, countryFlag, formatCountry, formatWineTitle } from '@/lib/labels'
@@ -84,26 +83,46 @@ export function BrowsePage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-2">
-        <Input
-          value={filters.q}
-          onChange={(e) => update({ q: e.target.value })}
-          placeholder="Search wines…"
-          className="w-full max-w-xs"
-        />
+        <div className="relative w-full max-w-xs">
+          <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={filters.q}
+            onChange={(e) => update({ q: e.target.value })}
+            placeholder="Search wines…"
+            className="pl-8"
+          />
+        </div>
+        {hasActiveFilters && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="shrink-0"
+            onClick={() =>
+              setSearchParams(filtersToParams({ ...DEFAULT_FILTERS, view: filters.view }), {
+                replace: true,
+              })
+            }
+          >
+            <FilterX className="size-4" />
+            Clear
+          </Button>
+        )}
         <ToggleGroup
           type="single"
           variant="outline"
           size="sm"
-          className="shrink-0"
+          className="ml-auto shrink-0"
           value={filters.view}
           onValueChange={(view) => {
             if (view) update({ view: view as BrowseFilters['view'] })
           }}
         >
           <ToggleGroupItem value="log" className="px-3">
+            <NotebookPen className="size-4" />
             Log
           </ToggleGroupItem>
           <ToggleGroupItem value="wines" className="px-3">
+            <Wine className="size-4" />
             Wines
           </ToggleGroupItem>
         </ToggleGroup>
@@ -208,23 +227,12 @@ export function BrowsePage() {
             {[9, 8, 7, 6, 5].map((rating) => (
               <SelectItem key={rating} value={String(rating)}>
                 <span className="inline-flex items-center gap-1">
-                  {rating}+ <Grape className="size-3.5" />
+                  {rating}+ <Grape className="size-3.5 text-[#8E4585]" />
                 </span>
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        {hasActiveFilters && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="shrink-0"
-            onClick={() => setSearchParams(filtersToParams({ ...DEFAULT_FILTERS, view: filters.view }), { replace: true })}
-          >
-            <FilterX className="size-4" />
-            Clear
-          </Button>
-        )}
       </div>
 
       {isPending ? (
@@ -249,7 +257,7 @@ export function BrowsePage() {
       ) : filters.view === 'log' ? (
         <TastingFeed tastings={filtered} photoUrls={photoUrls} />
       ) : (
-        <WineGrid tastings={filtered} photoUrls={photoUrls} />
+        <WineGrid tastings={filtered} />
       )}
     </div>
   )
@@ -375,11 +383,9 @@ function TastingFeed({
                   </p>
                 )}
                 {t.tasting_flavours.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-1">
+                  <div className="mt-3 flex flex-wrap gap-1.5">
                     {t.tasting_flavours.map((tf) => (
-                      <Badge key={tf.flavour.id} variant="outline" className="font-normal">
-                        {tf.flavour.name}
-                      </Badge>
+                      <FlavourBadge key={tf.flavour.id} name={tf.flavour.name} />
                     ))}
                   </div>
                 )}
@@ -392,13 +398,7 @@ function TastingFeed({
   )
 }
 
-function WineGrid({
-  tastings,
-  photoUrls,
-}: {
-  tastings: TastingWithWine[]
-  photoUrls: Record<string, string>
-}) {
+function WineGrid({ tastings }: { tastings: TastingWithWine[] }) {
   // Group the filtered tastings by wine; a wine shows if any tasting matched.
   const wines = useMemo(() => {
     const byWine = new Map<string, { wine: WineWithRefs; tastings: TastingWithWine[] }>()
@@ -411,7 +411,7 @@ function WineGrid({
   }, [tastings])
 
   return (
-    <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <ul className="space-y-2">
       {wines.map(({ wine, tastings: wineTastings }) => {
         const ratings = wineTastings
           .map((t) => t.rating)
@@ -419,49 +419,42 @@ function WineGrid({
         const avg =
           ratings.length > 0 ? ratings.reduce((sum, r) => sum + r, 0) / ratings.length : null
         const latest = wineTastings[0]
-        const photoPath = wineTastings.find((t) => t.photo_path)?.photo_path
+        const varietals = wine.wine_varietals.map((wv) => wv.varietal.name).join(', ')
         return (
           <li key={wine.id}>
             <Link
               to={`/wines/${wine.id}`}
-              className="flex gap-3 rounded-lg border bg-card p-3 transition-colors hover:bg-accent/50"
+              className="flex items-center gap-4 rounded-lg border bg-card p-4 transition-colors hover:bg-accent/50"
             >
-              {photoPath && photoUrls[photoPath] ? (
-                <img
-                  src={photoUrls[photoPath]}
-                  alt=""
-                  className="size-20 shrink-0 rounded-md object-cover"
-                />
+              {wine.colour ? (
+                <ColourGlass colour={wine.colour} className="size-10" />
               ) : (
-                <div className="flex size-20 shrink-0 items-center justify-center rounded-md bg-muted">
-                  {wine.colour ? (
-                    <ColourGlass colour={wine.colour} />
-                  ) : (
-                    <Wine className="size-4 text-muted-foreground" />
-                  )}
-                </div>
+                <Wine className="size-10 shrink-0 text-muted-foreground" />
               )}
-              <div className="min-w-0 flex-1 space-y-1">
-                <p className="font-medium">{formatWineTitle(wine)}</p>
+              <div className="min-w-0 flex-1 space-y-0.5">
+                <p className="truncate font-medium">{formatWineTitle(wine)}</p>
                 <p className="truncate text-sm text-muted-foreground">
-                  {[wine.producer, wine.subregion?.name, wine.region?.name, formatCountry(wine.country)]
+                  {[
+                    wine.producer,
+                    [wine.subregion?.name, wine.region?.name, formatCountry(wine.country)]
+                      .filter(Boolean)
+                      .join(', '),
+                  ]
                     .filter(Boolean)
                     .join(' · ')}
                 </p>
-                <p className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
-                  {avg == null ? (
-                    'Unrated'
-                  ) : wineTastings.length === 1 ? (
-                    <GrapeScore value={avg.toFixed(0)} />
-                  ) : (
-                    <>
-                      {wineTastings.length} tastings · avg{' '}
-                      <GrapeScore value={avg.toFixed(1)} />
-                    </>
-                  )}
-                  <span>· last {latest.consumed_on}</span>
+                <p className="flex flex-wrap items-center gap-x-1 text-xs text-muted-foreground">
+                  {varietals && <span className="truncate">{varietals}</span>}
+                  {varietals && <span>·</span>}
+                  <span>
+                    {wineTastings.length === 1
+                      ? '1 tasting'
+                      : `${wineTastings.length} tastings`}
+                  </span>
+                  <span>· last {formatRelativeDate(latest.consumed_on)}</span>
                 </p>
               </div>
+              {avg != null && <GrapeScore value={avg.toFixed(1)} className="shrink-0 text-lg" />}
             </Link>
           </li>
         )
