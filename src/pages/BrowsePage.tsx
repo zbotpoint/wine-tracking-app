@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
-import { FilterX, Repeat, Wine } from 'lucide-react'
+import { FilterX, Grape, Repeat, Wine } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,7 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { ColourDot, ColourVarietalLine, RatingBadge } from '@/components/wine-bits'
 import { useUserId } from '@/lib/auth'
-import { COLOURS, COLOUR_LABELS, formatWineTitle } from '@/lib/labels'
+import { COLOURS, countryFlag, formatWineTitle } from '@/lib/labels'
 import { signedUrlsQuery } from '@/lib/photos'
 import { countriesQuery, profilesQuery, regionsQuery, varietalsQuery } from '@/lib/queries/lookups'
 import { tastingsQuery, type TastingWithWine, type WineWithRefs } from '@/lib/queries/tastings'
@@ -89,15 +89,15 @@ export function BrowsePage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex items-center gap-2 overflow-x-auto pb-1">
         <Input
           value={filters.q}
           onChange={(e) => update({ q: e.target.value })}
           placeholder="Search wines…"
-          className="w-full sm:max-w-xs"
+          className="w-36 shrink-0 sm:w-48"
         />
         <Select value={filters.owner} onValueChange={(owner) => update({ owner })}>
-          <SelectTrigger size="sm">
+          <SelectTrigger size="sm" className="shrink-0">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -118,14 +118,14 @@ export function BrowsePage() {
             update({ colour: colour === ANY ? null : (colour as BrowseFilters['colour']) })
           }
         >
-          <SelectTrigger size="sm">
+          <SelectTrigger size="sm" className="shrink-0">
             <SelectValue placeholder="Colour" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={ANY}>Any colour</SelectItem>
             {COLOURS.map((colour) => (
               <SelectItem key={colour} value={colour}>
-                {COLOUR_LABELS[colour]}
+                <ColourDot colour={colour} withLabel />
               </SelectItem>
             ))}
           </SelectContent>
@@ -136,14 +136,14 @@ export function BrowsePage() {
             update({ country: country === ANY ? null : country, region: null })
           }
         >
-          <SelectTrigger size="sm">
+          <SelectTrigger size="sm" className="shrink-0">
             <SelectValue placeholder="Country" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={ANY}>Any country</SelectItem>
             {countries.map((country) => (
               <SelectItem key={country.code} value={country.code}>
-                {country.name}
+                {countryFlag(country.code)} {country.name}
               </SelectItem>
             ))}
           </SelectContent>
@@ -152,7 +152,7 @@ export function BrowsePage() {
           value={filters.region ?? ANY}
           onValueChange={(region) => update({ region: region === ANY ? null : region })}
         >
-          <SelectTrigger size="sm">
+          <SelectTrigger size="sm" className="shrink-0">
             <SelectValue placeholder="Region" />
           </SelectTrigger>
           <SelectContent>
@@ -168,7 +168,7 @@ export function BrowsePage() {
           value={filters.varietal ?? ANY}
           onValueChange={(varietal) => update({ varietal: varietal === ANY ? null : varietal })}
         >
-          <SelectTrigger size="sm">
+          <SelectTrigger size="sm" className="shrink-0">
             <SelectValue placeholder="Varietal" />
           </SelectTrigger>
           <SelectContent>
@@ -186,14 +186,16 @@ export function BrowsePage() {
             update({ minRating: minRating === ANY ? null : Number(minRating) })
           }
         >
-          <SelectTrigger size="sm">
+          <SelectTrigger size="sm" className="shrink-0">
             <SelectValue placeholder="Rating" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={ANY}>Any rating</SelectItem>
             {[9, 8, 7, 6, 5].map((rating) => (
               <SelectItem key={rating} value={String(rating)}>
-                {rating}+
+                <span className="inline-flex items-center gap-1">
+                  {rating}+ <Grape className="size-3.5" />
+                </span>
               </SelectItem>
             ))}
           </SelectContent>
@@ -202,6 +204,7 @@ export function BrowsePage() {
           <Button
             variant="ghost"
             size="sm"
+            className="shrink-0"
             onClick={() => setSearchParams(filtersToParams({ ...DEFAULT_FILTERS, view: filters.view }), { replace: true })}
           >
             <FilterX className="size-4" />
@@ -212,7 +215,7 @@ export function BrowsePage() {
           type="single"
           variant="outline"
           size="sm"
-          className="ml-auto"
+          className="ml-auto shrink-0"
           value={filters.view}
           onValueChange={(view) => {
             if (view) update({ view: view as BrowseFilters['view'] })
