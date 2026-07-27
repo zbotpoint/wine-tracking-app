@@ -174,7 +174,7 @@ export function WineFields({ form }: { form: UseFormReturn<WineFormValues> }) {
                       'flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium transition-colors',
                       field.value === c
                         ? 'border-ring bg-accent'
-                        : 'border-input text-muted-foreground hover:bg-accent/50 hover:text-foreground',
+                        : 'border-input bg-input/30 text-muted-foreground hover:bg-accent/50 hover:text-foreground',
                     )}
                     onClick={() => field.onChange(field.value === c ? null : c)}
                   >

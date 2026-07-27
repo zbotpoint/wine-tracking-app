@@ -31,7 +31,7 @@ export function Layout() {
 
   return (
     <div className="min-h-svh bg-background">
-      <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
+      <header className="sticky top-0 z-40 border-b bg-card/95 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-3xl items-center justify-between gap-2 px-4">
           <Link to="/" className="flex items-center gap-2 font-semibold">
             <Wine className="size-5 text-chart-1" />

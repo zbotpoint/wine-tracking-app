@@ -99,7 +99,7 @@ export function WineDetailPage() {
 
         <ul className="space-y-3">
           {tastings.map((t) => (
-            <li key={t.id} className="space-y-3 rounded-lg border p-4">
+            <li key={t.id} className="space-y-3 rounded-lg border bg-card p-4">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{t.profile.display_name}</span>

@@ -1,5 +1,4 @@
 import { Grape, Wine } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
 import { COLOUR_TEXT_CLASSES, COLOUR_LABELS } from '@/lib/labels'
 import { cn } from '@/lib/utils'
 import type { Enums } from '@/types/database.types'
@@ -28,7 +27,7 @@ export function ColourGlass({
   )
 }
 
-// "7.7🍇" — a score with a grape in place of "/10".
+// "7.7🍇" — a violet score with a grape in place of "/10".
 export function GrapeScore({
   value,
   className,
@@ -37,22 +36,23 @@ export function GrapeScore({
   className?: string
 }) {
   return (
-    <span className={cn('inline-flex items-center gap-0.5 tabular-nums', className)}>
+    <span
+      className={cn(
+        'inline-flex items-center gap-0.5 font-semibold text-[#8E4585] tabular-nums',
+        className,
+      )}
+    >
       {value}
-      <Grape className="size-3.5 shrink-0" aria-hidden />
+      <Grape className="size-[1.1em] shrink-0" aria-hidden />
     </span>
   )
 }
 
 export function RatingBadge({ rating, className }: { rating: number; className?: string }) {
   return (
-    <Badge
-      variant="secondary"
-      className={cn('shrink-0 font-semibold', className)}
-      aria-label={`Rated ${rating} out of 10`}
-    >
-      <GrapeScore value={rating} />
-    </Badge>
+    <span aria-label={`Rated ${rating} out of 10`} className={cn('shrink-0', className)}>
+      <GrapeScore value={rating} className="text-xl" />
+    </span>
   )
 }
 

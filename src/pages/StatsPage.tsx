@@ -76,7 +76,7 @@ export function StatsPage() {
       </div>
 
       {tastings.length === 0 ? (
-        <p className="rounded-lg border border-dashed py-16 text-center text-muted-foreground">
+        <p className="rounded-lg border border-dashed bg-card py-16 text-center text-muted-foreground">
           No tastings logged yet.
         </p>
       ) : (
@@ -127,7 +127,7 @@ export function StatsPage() {
 
 function StatTile({ label, value }: { label: string; value: ReactNode }) {
   return (
-    <div className="rounded-lg border p-3">
+    <div className="rounded-lg border bg-card p-3">
       <p className="text-xs text-muted-foreground">{label}</p>
       <p className="text-2xl font-semibold tabular-nums">{value}</p>
     </div>

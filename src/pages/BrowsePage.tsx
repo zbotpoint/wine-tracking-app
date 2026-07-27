@@ -240,7 +240,7 @@ export function BrowsePage() {
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="rounded-lg border border-dashed py-16 text-center">
+        <div className="rounded-lg border border-dashed bg-card py-16 text-center">
           <p className="text-muted-foreground">
             {tastings?.length === 0
               ? 'No wines logged yet. Log your first one!'
@@ -285,7 +285,7 @@ function TastingFeed({
           <li key={t.id}>
             <Link
               to={`/wines/${t.wine_id}`}
-              className="flex gap-3 rounded-lg border p-3 transition-colors hover:bg-accent/50"
+              className="flex gap-3 rounded-lg border bg-card p-3 transition-colors hover:bg-accent/50"
             >
               {t.photo_path && photoUrls[t.photo_path] ? (
                 <img
@@ -366,7 +366,7 @@ function WineGrid({
           <li key={wine.id}>
             <Link
               to={`/wines/${wine.id}`}
-              className="flex gap-3 rounded-lg border p-3 transition-colors hover:bg-accent/50"
+              className="flex gap-3 rounded-lg border bg-card p-3 transition-colors hover:bg-accent/50"
             >
               {photoPath && photoUrls[photoPath] ? (
                 <img

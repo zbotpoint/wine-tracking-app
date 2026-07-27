@@ -63,11 +63,13 @@
     --foreground: var(--palette-light);
     --card: color-mix(in srgb, var(--palette-dark) 96%, var(--palette-light));
     --card-foreground: var(--palette-light);
-    --popover: color-mix(in srgb, var(--palette-dark) 96%, var(--palette-light));
+    /* Surface ladder: page 0% -> card 4% -> muted 8% -> secondary 12% ->
+       popover 14% light. Stacked elements must never share a background. */
+    --popover: color-mix(in srgb, var(--palette-dark) 86%, var(--palette-light));
     --popover-foreground: var(--palette-light);
     --primary: var(--palette-bordeaux);
     --primary-foreground: var(--palette-light);
-    --secondary: color-mix(in srgb, var(--palette-dark) 92%, var(--palette-light));
+    --secondary: color-mix(in srgb, var(--palette-dark) 88%, var(--palette-light));
     --secondary-foreground: var(--palette-light);
     --muted: color-mix(in srgb, var(--palette-dark) 92%, var(--palette-light));
     --muted-foreground: color-mix(in srgb, var(--palette-light) 60%, transparent);
