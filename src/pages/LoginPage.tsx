@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Navigate, useLocation } from 'react-router'
 import { Wine } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { FieldError } from '@/components/field-error'
@@ -43,7 +43,6 @@ export function LoginPage() {
         <CardHeader className="text-center">
           <Wine className="mx-auto size-8 text-chart-1" />
           <CardTitle>Wine Log</CardTitle>
-          <CardDescription>Accounts are invite-only.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">
