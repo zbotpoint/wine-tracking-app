@@ -1,7 +1,7 @@
-import { useMemo } from 'react'
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
-import { FilterX, Grape, Repeat, Wine } from 'lucide-react'
+import { FilterX, Grape, Wine } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { ColourGlass, ColourVarietalLine, GrapeScore, RatingBadge } from '@/components/wine-bits'
+import { ColourGlass, ColourVarietalLine, GrapeScore } from '@/components/wine-bits'
 import { useUserId } from '@/lib/auth'
 import { formatRelativeDate } from '@/lib/dates'
 import { COLOURS, countryFlag, formatCountry, formatWineTitle } from '@/lib/labels'
@@ -67,13 +67,6 @@ export function BrowsePage() {
       return wineMatches(t.wine, filters, q)
     })
   }, [tastings, filters, ownerId, q])
-
-  // ×N badges count every tasting of the wine, not just the filtered ones.
-  const tastingCountByWine = useMemo(() => {
-    const counts = new Map<string, number>()
-    for (const t of tastings ?? []) counts.set(t.wine_id, (counts.get(t.wine_id) ?? 0) + 1)
-    return counts
-  }, [tastings])
 
   const photoPaths = useMemo(
     () => [...new Set(filtered.map((t) => t.photo_path).filter((p): p is string => p != null))],
@@ -254,12 +247,7 @@ export function BrowsePage() {
           )}
         </div>
       ) : filters.view === 'log' ? (
-        <TastingFeed
-          tastings={filtered}
-          photoUrls={photoUrls}
-          tastingCountByWine={tastingCountByWine}
-          showOwner={filters.owner !== 'me'}
-        />
+        <TastingFeed tastings={filtered} photoUrls={photoUrls} />
       ) : (
         <WineGrid tastings={filtered} photoUrls={photoUrls} />
       )}
@@ -267,21 +255,59 @@ export function BrowsePage() {
   )
 }
 
+// Producer and geography share one interpunct-joined line unless that line
+// would truncate, in which case the geography drops to its own line (and the
+// interpunct goes away). Measured against an invisible single-line copy.
+function OriginLine({ wine }: { wine: WineWithRefs }) {
+  const geo = [wine.subregion?.name, wine.region?.name, formatCountry(wine.country)]
+    .filter(Boolean)
+    .join(', ')
+  const producer = wine.producer
+  const single = [producer, geo].filter(Boolean).join(' · ')
+
+  const containerRef = useRef<HTMLParagraphElement>(null)
+  const measureRef = useRef<HTMLSpanElement>(null)
+  const [split, setSplit] = useState(false)
+
+  useLayoutEffect(() => {
+    const container = containerRef.current
+    const measure = measureRef.current
+    if (!container || !measure) return
+    const update = () => setSplit(measure.scrollWidth > container.clientWidth)
+    update()
+    const observer = new ResizeObserver(update)
+    observer.observe(container)
+    return () => observer.disconnect()
+  }, [single])
+
+  if (!single) return null
+  return (
+    <p ref={containerRef} className="relative text-sm text-muted-foreground">
+      <span ref={measureRef} aria-hidden className="invisible absolute whitespace-nowrap">
+        {single}
+      </span>
+      {split && producer && geo ? (
+        <>
+          <span className="block truncate">{producer}</span>
+          <span className="block truncate">{geo}</span>
+        </>
+      ) : (
+        <span className="block truncate">{single}</span>
+      )}
+    </p>
+  )
+}
+
 function TastingFeed({
   tastings,
   photoUrls,
-  tastingCountByWine,
-  showOwner,
 }: {
   tastings: TastingWithWine[]
   photoUrls: Record<string, string>
-  tastingCountByWine: Map<string, number>
-  showOwner: boolean
 }) {
   return (
     <ul className="space-y-3">
       {tastings.map((t) => {
-        const repeatCount = tastingCountByWine.get(t.wine_id) ?? 1
         const photoUrl = t.photo_path ? photoUrls[t.photo_path] : undefined
         return (
           <li key={t.id}>
@@ -289,33 +315,74 @@ function TastingFeed({
               to={`/wines/${t.wine_id}`}
               className="block overflow-hidden rounded-lg border bg-card transition-colors hover:bg-accent/50"
             >
-              {photoUrl && (
-                <img src={photoUrl} alt="" className="h-44 w-full object-cover" />
-              )}
-              <div className="space-y-1 p-3">
-                <div className="flex items-start justify-between gap-2">
-                  <p className="font-medium">{formatWineTitle(t.wine)}</p>
-                  {t.rating != null && <RatingBadge rating={t.rating} />}
+              {photoUrl ? (
+                <div className="relative">
+                  <img src={photoUrl} alt="" className="h-64 w-full object-cover" />
+                  <div className="absolute inset-x-0 top-0 flex items-baseline gap-2 bg-gradient-to-b from-black/60 to-transparent px-3 pt-2 pb-8">
+                    <span className="text-sm font-medium text-white">
+                      {t.profile.display_name}
+                    </span>
+                    <span className="text-xs text-white/70">
+                      {formatRelativeDate(t.consumed_on)}
+                    </span>
+                  </div>
                 </div>
-                <p className="truncate text-sm text-muted-foreground">
-                  {[t.wine.producer, t.wine.subregion?.name, t.wine.region?.name, formatCountry(t.wine.country)]
-                    .filter(Boolean)
-                    .join(' · ')}
-                </p>
-                <ColourVarietalLine
-                  colour={t.wine.colour}
-                  varietals={t.wine.wine_varietals}
-                  className="text-sm"
-                />
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 pt-0.5 text-xs text-muted-foreground">
-                  <span>{formatRelativeDate(t.consumed_on)}</span>
-                  {showOwner && <span>{t.profile.display_name}</span>}
-                  {repeatCount > 1 && (
-                    <Badge variant="outline" className="gap-1 font-normal">
-                      <Repeat className="size-3" />×{repeatCount}
-                    </Badge>
-                  )}
+              ) : null}
+              <div className="p-4 pb-6">
+                {!photoUrl && (
+                  <p className="mb-3 flex items-baseline gap-2 text-sm font-medium text-muted-foreground">
+                    {t.profile.display_name}
+                    <span className="text-xs font-normal">
+                      {formatRelativeDate(t.consumed_on)}
+                    </span>
+                  </p>
+                )}
+                <div className="space-y-1">
+                  <p className="text-lg font-semibold text-foreground">
+                    {formatWineTitle(t.wine)}
+                  </p>
+                  <OriginLine wine={t.wine} />
+                  <ColourVarietalLine
+                    colour={t.wine.colour}
+                    varietals={t.wine.wine_varietals}
+                    className="flex text-sm text-muted-foreground"
+                  />
                 </div>
+                {t.notes && (
+                  <p className="mt-8 line-clamp-3 text-sm whitespace-pre-wrap text-foreground">
+                    {t.notes}
+                  </p>
+                )}
+                {t.rating != null && (
+                  <p
+                    className="mt-8 flex items-center gap-3"
+                    aria-label={`Rated ${t.rating} out of 10`}
+                  >
+                    <span className="flex items-center gap-0.5">
+                      {Array.from({ length: 10 }, (_, i) => (
+                        <Grape
+                          key={i}
+                          className={
+                            i < t.rating!
+                              ? 'size-6 text-[#8E4585]'
+                              : 'size-6 text-foreground opacity-40'
+                          }
+                          aria-hidden
+                        />
+                      ))}
+                    </span>
+                    <span className="text-xl text-foreground">{t.rating}</span>
+                  </p>
+                )}
+                {t.tasting_flavours.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-1">
+                    {t.tasting_flavours.map((tf) => (
+                      <Badge key={tf.flavour.id} variant="outline" className="font-normal">
+                        {tf.flavour.name}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
               </div>
             </Link>
           </li>

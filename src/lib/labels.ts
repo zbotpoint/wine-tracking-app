@@ -44,7 +44,7 @@ export const TEMPS = Object.keys(TEMP_LABELS) as Enums<'serving_temp'>[]
 export const CURRENCIES = ['CAD', 'USD', 'EUR', 'GBP', 'AUD', 'NZD', 'CHF', 'JPY', 'ZAR', 'ARS', 'CLP'] as const
 
 export function formatCountry(country: { code: string; name: string } | null): string | null {
-  return country ? `${countryFlag(country.code)} ${country.name}` : null
+  return country ? `${country.name} ${countryFlag(country.code)}` : null
 }
 
 export function countryFlag(code: string): string {
