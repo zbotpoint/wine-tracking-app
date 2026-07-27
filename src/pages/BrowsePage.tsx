@@ -16,6 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { ColourGlass, ColourVarietalLine, GrapeScore, RatingBadge } from '@/components/wine-bits'
 import { useUserId } from '@/lib/auth'
+import { formatRelativeDate } from '@/lib/dates'
 import { COLOURS, countryFlag, formatCountry, formatWineTitle } from '@/lib/labels'
 import { signedUrlsQuery } from '@/lib/photos'
 import { countriesQuery, profilesQuery, regionsQuery, varietalsQuery } from '@/lib/queries/lookups'
@@ -281,28 +282,17 @@ function TastingFeed({
     <ul className="space-y-3">
       {tastings.map((t) => {
         const repeatCount = tastingCountByWine.get(t.wine_id) ?? 1
+        const photoUrl = t.photo_path ? photoUrls[t.photo_path] : undefined
         return (
           <li key={t.id}>
             <Link
               to={`/wines/${t.wine_id}`}
-              className="flex gap-3 rounded-lg border bg-card p-3 transition-colors hover:bg-accent/50"
+              className="block overflow-hidden rounded-lg border bg-card transition-colors hover:bg-accent/50"
             >
-              {t.photo_path && photoUrls[t.photo_path] ? (
-                <img
-                  src={photoUrls[t.photo_path]}
-                  alt=""
-                  className="size-20 shrink-0 rounded-md object-cover"
-                />
-              ) : (
-                <div className="flex size-20 shrink-0 items-center justify-center rounded-md bg-muted">
-                  {t.wine.colour ? (
-                    <ColourGlass colour={t.wine.colour} />
-                  ) : (
-                    <Wine className="size-4 text-muted-foreground" />
-                  )}
-                </div>
+              {photoUrl && (
+                <img src={photoUrl} alt="" className="h-44 w-full object-cover" />
               )}
-              <div className="min-w-0 flex-1 space-y-1">
+              <div className="space-y-1 p-3">
                 <div className="flex items-start justify-between gap-2">
                   <p className="font-medium">{formatWineTitle(t.wine)}</p>
                   {t.rating != null && <RatingBadge rating={t.rating} />}
@@ -312,12 +302,13 @@ function TastingFeed({
                     .filter(Boolean)
                     .join(' · ')}
                 </p>
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
-                  <ColourVarietalLine
-                    colour={t.wine.colour}
-                    varietals={t.wine.wine_varietals}
-                  />
-                  <span>{t.consumed_on}</span>
+                <ColourVarietalLine
+                  colour={t.wine.colour}
+                  varietals={t.wine.wine_varietals}
+                  className="text-sm"
+                />
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 pt-0.5 text-xs text-muted-foreground">
+                  <span>{formatRelativeDate(t.consumed_on)}</span>
                   {showOwner && <span>{t.profile.display_name}</span>}
                   {repeatCount > 1 && (
                     <Badge variant="outline" className="gap-1 font-normal">

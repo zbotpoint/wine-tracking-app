@@ -71,8 +71,8 @@ export function ColourVarietalLine({
   if (!colour && !names) return null
   return (
     <span className={cn('inline-flex flex-wrap items-center gap-1.5', className)}>
-      {colour && <ColourGlass colour={colour} withLabel />}
       {names && <span>{names}</span>}
+      {colour && <ColourGlass colour={colour} withLabel />}
     </span>
   )
 }
