@@ -15,7 +15,7 @@ import {
   varietalsQuery,
 } from '@/lib/queries/lookups'
 import { winesQuery } from '@/lib/queries/wines'
-import { ColourDot } from '@/components/wine-bits'
+import { ColourGlass } from '@/components/wine-bits'
 import { COLOURS, COLOUR_LABELS, countryFlag } from '@/lib/labels'
 import { cn } from '@/lib/utils'
 import type { WineFormValues } from '@/lib/schemas/wine'
@@ -178,7 +178,7 @@ export function WineFields({ form }: { form: UseFormReturn<WineFormValues> }) {
                     )}
                     onClick={() => field.onChange(field.value === c ? null : c)}
                   >
-                    <ColourDot colour={c} />
+                    <ColourGlass colour={c} />
                     {COLOUR_LABELS[c]}
                   </button>
                 ))}

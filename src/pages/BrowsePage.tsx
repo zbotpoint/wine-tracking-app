@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { ColourDot, ColourVarietalLine, RatingBadge } from '@/components/wine-bits'
+import { ColourGlass, ColourVarietalLine, RatingBadge } from '@/components/wine-bits'
 import { useUserId } from '@/lib/auth'
 import { COLOURS, countryFlag, formatWineTitle } from '@/lib/labels'
 import { signedUrlsQuery } from '@/lib/photos'
@@ -125,7 +125,7 @@ export function BrowsePage() {
             <SelectItem value={ANY}>Any colour</SelectItem>
             {COLOURS.map((colour) => (
               <SelectItem key={colour} value={colour}>
-                <ColourDot colour={colour} withLabel />
+                <ColourGlass colour={colour} withLabel />
               </SelectItem>
             ))}
           </SelectContent>
@@ -293,7 +293,7 @@ function TastingFeed({
               ) : (
                 <div className="flex size-20 shrink-0 items-center justify-center rounded-md bg-muted">
                   {t.wine.colour ? (
-                    <ColourDot colour={t.wine.colour} />
+                    <ColourGlass colour={t.wine.colour} />
                   ) : (
                     <Wine className="size-4 text-muted-foreground" />
                   )}
@@ -374,7 +374,7 @@ function WineGrid({
               ) : (
                 <div className="flex size-20 shrink-0 items-center justify-center rounded-md bg-muted">
                   {wine.colour ? (
-                    <ColourDot colour={wine.colour} />
+                    <ColourGlass colour={wine.colour} />
                   ) : (
                     <Wine className="size-4 text-muted-foreground" />
                   )}

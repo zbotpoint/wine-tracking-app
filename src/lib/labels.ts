@@ -10,15 +10,15 @@ export const COLOUR_LABELS: Record<Enums<'wine_colour'>, string> = {
   dessert: 'Dessert',
 }
 
-// The canonical wine-colour palette, used everywhere a colour dot renders.
-export const COLOUR_DOT_CLASSES: Record<Enums<'wine_colour'>, string> = {
-  red: 'bg-[#81171B]',
-  white: 'bg-[#DED4AB]',
-  rose: 'bg-[#FD96A9]',
-  orange: 'bg-[#D98E32]',
-  sparkling: 'bg-[#E2D39D]',
-  fortified: 'bg-[#3B0E31]',
-  dessert: 'bg-[#DCEDFF]',
+// The canonical wine-colour palette, used everywhere a coloured glass renders.
+export const COLOUR_TEXT_CLASSES: Record<Enums<'wine_colour'>, string> = {
+  red: 'text-[#81171B]',
+  white: 'text-[#DED4AB]',
+  rose: 'text-[#FD96A9]',
+  orange: 'text-[#F7B267]',
+  sparkling: 'text-[#E2D39D]',
+  fortified: 'text-[#3B0E31]',
+  dessert: 'text-[#DCEDFF]',
 }
 
 export const VESSEL_LABELS: Record<Enums<'vessel_type'>, string> = {

@@ -1,19 +1,22 @@
+import { Wine } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { COLOUR_DOT_CLASSES, COLOUR_LABELS } from '@/lib/labels'
+import { COLOUR_TEXT_CLASSES, COLOUR_LABELS } from '@/lib/labels'
 import { cn } from '@/lib/utils'
 import type { Enums } from '@/types/database.types'
 
-export function ColourDot({
+export function ColourGlass({
   colour,
   withLabel = false,
+  className,
 }: {
   colour: Enums<'wine_colour'>
   withLabel?: boolean
+  className?: string
 }) {
   return (
     <span className="inline-flex items-center gap-1.5">
-      <span
-        className={cn('size-2.5 shrink-0 rounded-full', COLOUR_DOT_CLASSES[colour])}
+      <Wine
+        className={cn('size-3.5 shrink-0', COLOUR_TEXT_CLASSES[colour], className)}
         aria-hidden
       />
       {withLabel ? (
@@ -52,7 +55,7 @@ export function ColourVarietalLine({
   if (!colour && !names) return null
   return (
     <span className={cn('inline-flex flex-wrap items-center gap-1.5', className)}>
-      {colour && <ColourDot colour={colour} withLabel />}
+      {colour && <ColourGlass colour={colour} withLabel />}
       {names && <span>{names}</span>}
     </span>
   )
