@@ -67,9 +67,9 @@ export function Layout() {
           size="icon"
           className="fixed right-4 bottom-4 z-50 size-14 rounded-full shadow-lg"
         >
-          <Link to="/log" aria-label="Log a wine">
-            <Plus className="size-5" />
-            <Wine className="size-6" />
+          <Link to="/log" aria-label="Log a wine" className="gap-0">
+            <Plus className="size-5" strokeWidth={3} />
+            <Wine className="size-6" strokeWidth={2.5} />
           </Link>
         </Button>
       )}
