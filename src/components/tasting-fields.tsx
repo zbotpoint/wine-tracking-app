@@ -233,10 +233,10 @@ export function RatingNotesFields({ form }: { form: UseFormReturn<TastingFieldsV
                   >
                     <Grape
                       className={cn(
-                        'size-6 text-foreground transition-opacity',
+                        'size-6 transition-colors',
                         field.value != null && rating <= field.value
-                          ? 'opacity-100'
-                          : 'opacity-40',
+                          ? 'text-[#8E4585]'
+                          : 'text-foreground opacity-40',
                       )}
                     />
                   </button>

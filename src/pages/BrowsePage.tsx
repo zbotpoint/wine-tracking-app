@@ -128,12 +128,12 @@ export function BrowsePage() {
         </ToggleGroup>
       </div>
 
-      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+      <div className="flex flex-wrap items-center gap-2">
         <Select value={filters.owner} onValueChange={(owner) => update({ owner })}>
           <SelectTrigger size="sm" className="shrink-0">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="w-[var(--radix-select-trigger-width)] min-w-0">
             <SelectItem value="me">My wines</SelectItem>
             <SelectItem value="all">Everyone</SelectItem>
             {profiles
@@ -154,7 +154,7 @@ export function BrowsePage() {
           <SelectTrigger size="sm" className="shrink-0">
             <SelectValue placeholder="Colour" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="w-[var(--radix-select-trigger-width)] min-w-0">
             <SelectItem value={ANY}>Any colour</SelectItem>
             {COLOURS.map((colour) => (
               <SelectItem key={colour} value={colour}>
@@ -172,7 +172,7 @@ export function BrowsePage() {
           <SelectTrigger size="sm" className="shrink-0">
             <SelectValue placeholder="Country" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="w-[var(--radix-select-trigger-width)] min-w-0">
             <SelectItem value={ANY}>Any country</SelectItem>
             {countries.map((country) => (
               <SelectItem key={country.code} value={country.code}>
@@ -188,7 +188,7 @@ export function BrowsePage() {
           <SelectTrigger size="sm" className="shrink-0">
             <SelectValue placeholder="Region" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="w-[var(--radix-select-trigger-width)] min-w-0">
             <SelectItem value={ANY}>Any region</SelectItem>
             {regionOptions.map((region) => (
               <SelectItem key={region.id} value={region.id}>
@@ -204,7 +204,7 @@ export function BrowsePage() {
           <SelectTrigger size="sm" className="shrink-0">
             <SelectValue placeholder="Varietal" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="w-[var(--radix-select-trigger-width)] min-w-0">
             <SelectItem value={ANY}>Any varietal</SelectItem>
             {varietals.map((varietal) => (
               <SelectItem key={varietal.id} value={varietal.id}>
@@ -222,7 +222,7 @@ export function BrowsePage() {
           <SelectTrigger size="sm" className="shrink-0">
             <SelectValue placeholder="Rating" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="w-[var(--radix-select-trigger-width)] min-w-0">
             <SelectItem value={ANY}>Any rating</SelectItem>
             {[9, 8, 7, 6, 5].map((rating) => (
               <SelectItem key={rating} value={String(rating)}>

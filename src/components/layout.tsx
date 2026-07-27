@@ -31,7 +31,9 @@ export function Layout() {
 
   return (
     <div className="min-h-svh bg-background">
-      <header className="sticky top-0 z-40 border-b bg-card/95 backdrop-blur">
+      {/* pt/bottom insets keep the chrome clear of the iOS status bar and home
+          indicator when launched as a home-screen app. */}
+      <header className="sticky top-0 z-40 border-b bg-card/95 pt-[env(safe-area-inset-top)] backdrop-blur">
         <div className="mx-auto flex h-14 max-w-3xl items-center justify-between gap-2 px-4">
           <Link to="/" className="flex items-center gap-2 font-semibold">
             <Wine className="size-5 text-chart-1" />
@@ -65,7 +67,7 @@ export function Layout() {
         <Button
           asChild
           size="icon"
-          className="fixed right-4 bottom-4 z-50 size-14 rounded-full shadow-lg"
+          className="fixed right-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-50 size-14 rounded-full shadow-lg"
         >
           <Link to="/log" aria-label="Log a wine" className="gap-0">
             <Plus className="size-5" strokeWidth={3} />
