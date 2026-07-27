@@ -15,9 +15,9 @@ export const COLOUR_TEXT_CLASSES: Record<Enums<'wine_colour'>, string> = {
   red: 'text-[#81171B]',
   white: 'text-[#DED4AB]',
   rose: 'text-[#FD96A9]',
-  orange: 'text-[#F7B267]',
+  orange: 'text-[#FF7950]',
   sparkling: 'text-[#F2C744]',
-  fortified: 'text-[#3B0E31]',
+  fortified: 'text-[#7E4D72]',
   dessert: 'text-[#DCEDFF]',
 }
 

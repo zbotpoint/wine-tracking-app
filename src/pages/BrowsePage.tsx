@@ -171,7 +171,7 @@ export function BrowsePage() {
           </SelectContent>
         </Select>
         <Select
-          value={filters.colour ?? ANY}
+          value={filters.colour ?? ''}
           onValueChange={(colour) =>
             update({ colour: colour === ANY ? null : (colour as BrowseFilters['colour']) })
           }
@@ -189,28 +189,28 @@ export function BrowsePage() {
           </SelectContent>
         </Select>
         <FilterSelect
-          placeholder="Country"
+          label="Country"
           anyLabel="Any country"
           value={filters.country}
           options={countryOptions}
           onChange={(country) => update({ country, region: null })}
         />
         <FilterSelect
-          placeholder="Region"
+          label="Region"
           anyLabel="Any region"
           value={filters.region}
           options={regionOptions}
           onChange={(region) => update({ region })}
         />
         <FilterSelect
-          placeholder="Varietal"
+          label="Varietal"
           anyLabel="Any varietal"
           value={filters.varietal}
           options={varietalOptions}
           onChange={(varietal) => update({ varietal })}
         />
         <Select
-          value={filters.minRating != null ? String(filters.minRating) : ANY}
+          value={filters.minRating != null ? String(filters.minRating) : ''}
           onValueChange={(minRating) =>
             update({ minRating: minRating === ANY ? null : Number(minRating) })
           }
